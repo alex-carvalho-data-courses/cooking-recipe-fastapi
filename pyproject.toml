@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "cooking-recipe-fastapi"
+version = "0.1.0"
+description = "tutorial project to create cooking recipe API - FastAPI"
+authors = ["alex carvalho <allex.carvalho@gmail.com>"]
+readme = "README.md"
+packages = [{include = "cooking_recipe_fastapi"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
