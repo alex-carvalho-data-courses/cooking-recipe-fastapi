@@ -12,13 +12,16 @@ based on [The FastAPI Ultimate Tutorial](https://christophergs.com/python/2021/1
 
 ### Summary of set up
 
-CHANGE_ME  
+In a environment with Python and Poetry already installed, issue the command:  
+```shell
+poetry install
+```
 
 ### Dependencies
 
 - python ^3.11
 - poetry ^1.4.2
-- FastAPI XXX (main python dependency managed by poetry)  
+- FastAPI ^0.101.0 (main python dependency managed by poetry)  
 
 ### Configuration
 
