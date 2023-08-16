@@ -32,8 +32,9 @@ CHANGE_ME
 CHANGE_ME  
 
 ### How to run tests
-
-CHANGE_ME  
+```shell
+poetry run pytest
+```
 
 ### Deployment instructions
 
