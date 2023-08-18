@@ -32,9 +32,22 @@ CHANGE_ME
 CHANGE_ME  
 
 ### How to run tests
+
+#### Automated  
 ```shell
 poetry run pytest
 ```
+
+#### Manual
+
+##### 1. start uvicorn server
+```shell
+uvicorn cooking_recipe_fastapi.main:app --reload
+```
+
+##### 2. Trigger manual tests from documentation
+
+http://127.0.0.1:8000/docs
 
 ### Deployment instructions
 
