@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from http import HTTPStatus
 
 from cooking_recipe_fastapi.main import app, ErrorMessage
 
@@ -11,7 +12,7 @@ def test_client() -> TestClient:
 
 @pytest.mark.parametrize(
     'expected_status_code,expected_json',
-    [pytest.param(200, {'msg': 'hello world!'}, id='success')])
+    [pytest.param(HTTPStatus.OK, {'msg': 'hello world!'}, id='success')])
 def test_read_root(
         test_client: TestClient,
         expected_status_code: int,
@@ -27,13 +28,13 @@ def test_read_root(
     [
         pytest.param(
             111,
-            400,
+            HTTPStatus.NOT_FOUND,
             {'detail': ErrorMessage.RECIPE_NOT_FOUND.value},
-            id='inexistent recipe'
+            id='nonexistent recipe'
         ),
         pytest.param(
             3,
-            200,
+            HTTPStatus.OK,
             {
                 'id': 3,
                 'label': 'Chicken Paprikash',
@@ -60,88 +61,96 @@ def test_read_recipe(
         pytest.param(
             'chicken',
             None,
-            200,
-            [
-                {
-                    'id': 1,
-                    'label': 'Chicken Vesuvio',
-                    'source': 'Serious Eats',
-                    'url': 'http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio'
-                           '-recipe.html'
-                },
-                {
-                    'id': 3,
-                    'label': 'Chicken Paprikash',
-                    'source': 'No Recipes',
-                    'url': 'http://norecipes.com/recipe/chicken-paprikash/'
-                }
-            ],
+            HTTPStatus.OK,
+            {
+                'results': [
+                    {
+                        'id': 1,
+                        'label': 'Chicken Vesuvio',
+                        'source': 'Serious Eats',
+                        'url': 'http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio'
+                               '-recipe.html'
+                    },
+                    {
+                        'id': 3,
+                        'label': 'Chicken Paprikash',
+                        'source': 'No Recipes',
+                        'url': 'http://norecipes.com/recipe/chicken-paprikash/'
+                    }
+                ]
+            },
             id='label_keyword query parameter'),
         pytest.param(
             None,
             2,
-            200,
-            [
-                {
-                    'id': 1,
-                    'label': 'Chicken Vesuvio',
-                    'source': 'Serious Eats',
-                    'url': 'http://www.seriouseats.com/recipes/2011/12/'
-                           'chicken-vesuvio-recipe.html'
-                },
-                {
-                    'id': 2,
-                    'label': 'Cauliflower and Tofu Curry',
-                    'source': 'Serious Eats',
-                    'url': 'https://www.seriouseats.com/'
-                           'sheet-pan-cauliflower-tofu-recipe'
-                }
-            ],
+            HTTPStatus.OK,
+            {
+                'results': [
+                    {
+                        'id': 1,
+                        'label': 'Chicken Vesuvio',
+                        'source': 'Serious Eats',
+                        'url': 'http://www.seriouseats.com/recipes/2011/12/'
+                               'chicken-vesuvio-recipe.html'
+                    },
+                    {
+                        'id': 2,
+                        'label': 'Cauliflower and Tofu Curry',
+                        'source': 'Serious Eats',
+                        'url': 'https://www.seriouseats.com/'
+                               'sheet-pan-cauliflower-tofu-recipe'
+                    }
+                ]
+            },
             id='max_results query parameter'),
         pytest.param(
             'Chicken',
             1,
-            200,
-            [
-                {
-                    'id': 1,
-                    'label': 'Chicken Vesuvio',
-                    'source': 'Serious Eats',
-                    'url': 'http://www.seriouseats.com/recipes/2011/12/'
-                           'chicken-vesuvio-recipe.html'
-                }
-            ],
+            HTTPStatus.OK,
+            {
+                'results': [
+                    {
+                        'id': 1,
+                        'label': 'Chicken Vesuvio',
+                        'source': 'Serious Eats',
+                        'url': 'http://www.seriouseats.com/recipes/2011/12/'
+                               'chicken-vesuvio-recipe.html'
+                    }
+                ]
+            },
             id='all query parameter'),
         pytest.param(
             None,
             None,
-            200,
-            [
-                {
-                    'id': 1,
-                    'label': 'Chicken Vesuvio',
-                    'source': 'Serious Eats',
-                    'url': 'http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio'
-                           '-recipe.html'
-                },
-                {
-                    'id': 2,
-                    'label': 'Cauliflower and Tofu Curry',
-                    'source': 'Serious Eats',
-                    'url': 'https://www.seriouseats.com/sheet-pan-cauliflower-tofu-recipe'
-                },
-                {
-                    'id': 3,
-                    'label': 'Chicken Paprikash',
-                    'source': 'No Recipes',
-                    'url': 'http://norecipes.com/recipe/chicken-paprikash/'
-                }
-            ],
+            HTTPStatus.OK,
+            {
+                'results': [
+                    {
+                        'id': 1,
+                        'label': 'Chicken Vesuvio',
+                        'source': 'Serious Eats',
+                        'url': 'http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio'
+                               '-recipe.html'
+                    },
+                    {
+                        'id': 2,
+                        'label': 'Cauliflower and Tofu Curry',
+                        'source': 'Serious Eats',
+                        'url': 'https://www.seriouseats.com/sheet-pan-cauliflower-tofu-recipe'
+                    },
+                    {
+                        'id': 3,
+                        'label': 'Chicken Paprikash',
+                        'source': 'No Recipes',
+                        'url': 'http://norecipes.com/recipe/chicken-paprikash/'
+                    }
+                ]
+            },
             id='no query parameter'),
         pytest.param(
             'soap',
             None,
-            404,
+            HTTPStatus.NOT_FOUND,
             {
                 'detail': ErrorMessage.RECIPE_NOT_FOUND.value
             },
@@ -152,8 +161,7 @@ def test_search_recipes(
         label_keyword: str | None,
         max_results: int | None,
         expected_status_code: int,
-        expected_json: str
-) -> None:
+        expected_json: str) -> None:
     path = f'/recipes/search/'
 
     query_params = []
@@ -171,3 +179,55 @@ def test_search_recipes(
 
     assert response.status_code == expected_status_code
     assert response.json() == expected_json
+
+
+@pytest.mark.parametrize(
+    'new_recipe,expected_status_code,expected_response',
+    [
+        pytest.param(
+            {
+                'label': 'Feijoada Boliviana',
+                'source': 'Curious Cuisiniere',
+                'url': 'https://www.curiouscuisiniere.com/'
+                       'feijoada-brazilian-black-bean-stew/',
+                'submitter_id': 123
+            },
+            HTTPStatus.CREATED,
+            {'resource_path': '/recipes/4'},
+            id='success'),
+        pytest.param(
+            {
+                'source': 'Curious Cuisiniere',
+                'submitter_id': 123
+            },
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            None,
+            id='missing properties request body'),
+        pytest.param(
+            {
+                'label': 'Feijoada Boliviana',
+                'source': 'Curious Cuisiniere',
+                'url': 'https://www.curiouscuisiniere.com/'
+                       'feijoada-brazilian-black-bean-stew/',
+                'submitter_id': 123,
+                'something': 'else'
+            },
+            HTTPStatus.CREATED,
+            {'resource_path': '/recipes/5'},
+            id='additional parameter')
+    ])
+def test_recipe_create(
+        test_client: TestClient,
+        new_recipe: dict,
+        expected_status_code: int,
+        expected_response: int) -> None:
+    response = test_client.post(
+        '/recipes/',
+        json=new_recipe)
+
+    assert response.status_code == expected_status_code
+
+    if expected_status_code == HTTPStatus.CREATED:
+        assert response.json() == expected_response
+    else:
+        assert 'detail' in response.json()
